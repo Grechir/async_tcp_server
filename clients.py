@@ -3,7 +3,7 @@ import random
 from datetime import datetime
 
 SERVER_ADDRESS = ('127.0.0.1', 9090)
-TIMEOUT_SEC = 2
+TIMEOUT_SEC = 2  # random timeout
 
 
 async def logger(log_file, request_time, request_message, response_time, response_message):
@@ -20,7 +20,7 @@ async def logger(log_file, request_time, request_message, response_time, respons
 
 
 async def client(client_id):
-    # создание клиента и его лог файла
+    # clients and logs creating
     reader, writer = await asyncio.open_connection(*SERVER_ADDRESS)
     log_file = f"logs/client_{client_id}_log.txt"
     request_num = 0
@@ -29,13 +29,13 @@ async def client(client_id):
         while True:
             await asyncio.sleep(random.uniform(0.3, 3))
 
-            # отправляет запрос
+            # sends a request
             request_message = f'[{request_num}] PING\n'
             request_time = datetime.now().strftime('%Y-%m-%d;%H:%M:%S.%f')[:-3]
             writer.write(request_message.encode('ascii'))
             await writer.drain()
 
-            # получает ответ
+            # receives a response
             try:
                 data = await asyncio.wait_for(reader.readuntil(b'\n'), timeout=TIMEOUT_SEC)
 
@@ -68,7 +68,7 @@ async def client(client_id):
 
 
 async def main():
-    # Запускаем двух клиентов параллельно
+    # running two clients in parallel
     await asyncio.gather(
         client(1),
         client(2),
@@ -79,16 +79,3 @@ if __name__ == '__main__':
         asyncio.run(main())
     except KeyboardInterrupt:
         pass
-
-
-
-
-
-
-
-
-
-
-
-
-

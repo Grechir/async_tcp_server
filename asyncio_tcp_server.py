@@ -22,12 +22,12 @@ class Server:
     async def client_connection(self, reader, writer):
         self.client_counter += 1
         client_id = self.client_counter
+
         request_counter = 0
 
         async def send_keepalive():
             while True:
                 await asyncio.sleep(5)
-                # async with self.response_counter_lock:
                 keepalive_message = f'[{self.response_counter}] keepalive\n'
                 self.response_counter += 1
                 writer.write(keepalive_message.encode('ascii'))
@@ -36,38 +36,39 @@ class Server:
         send_keepalive_message = asyncio.create_task(send_keepalive())
 
         try:
-            # запрос клиента
+            # client request
             while True:
-                data = await reader.read(1024)  # получение даты пакетами
+                data = await reader.read(1024)
                 if not data:
                     break
 
                 request_time = datetime.now().strftime('%Y-%m-%d;%H:%M:%S.%f')[:-3]
                 request_message = data.decode('ascii').strip('\n')
 
-            # ответ клиенту
+            # client response
                 if random.random() < 0.1:
-                    await self.logger(request_time, request_message,)  # сразу logger
-                    request_counter += 1  # запрос проигнорирован, но факт запроса фиксируется в логах
+                    await self.logger(request_time, request_message,)  # recording logs
+                    request_counter += 1  # the request was ignored, but the fact of the request is recorded in the logs
                     continue
 
                 await asyncio.sleep(random.uniform(0.1, 1))
 
                 response_time = datetime.now().strftime('%H:%M:%S.%f')[:-3]
-                async with self.response_counter_lock:  # Блокировка перед обновлением response_counter
+                async with self.response_counter_lock:  # blocking before updating response_counter
                     response_message = f'[{self.response_counter}/{request_counter}] PONG ({client_id})\n'
                     self.response_counter += 1
 
                 request_counter += 1
 
                 writer.write(response_message.encode('ascii'))
-                await writer.drain()  # проверка доставки сообщения
-                await self.logger(
+                await writer.drain()
+
+                await self.logger(  # recording logs
                     request_time,
                     request_message,
                     response_time,
                     response_message
-                )  # записываем логи
+                )
         except asyncio.CancelledError:
             pass
         finally:
@@ -78,16 +79,9 @@ class Server:
 
 async def main():
     server = Server()
-    open_server = await asyncio.start_server(server.client_connection, *SERVER_ADDRESS)  # создание сервера
+    open_server = await asyncio.start_server(server.client_connection, *SERVER_ADDRESS)
     async with open_server:
-
-        print('сервер запущен на 5 минут')
-        await asyncio.sleep(300)  # Ждем 5 минут (300 секунд)
-        open_server.close()
-        await open_server.wait_closed()
-        print('Отключаем сервер')
-
-        # await open_server.serve_forever()
+        await open_server.serve_forever()
 
 
 if __name__ == '__main__':
