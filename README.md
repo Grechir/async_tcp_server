@@ -13,9 +13,24 @@
 - [ ] Все действия сервера и клиентов логируются в собственных лог файлах
 
 ### Дополнение
-- [ ] Представленные в проекте лог файлы записывались в течении 5 минут
+- [ ] Представленные в проекте лог файлы записывались в течении 5 минут (в целях демонстрации)
+
 
 ## Установка и использование
-- установка -  
 
-  **Хорошего дня!**
+- [ ] установка:
+
+      git clone https://github.com/Grechir/async_tcp_server.git
+  
+- [ ] запуск сервера:
+
+      python asyncio_tcp_server.py
+  
+- [ ] запуск клиентов:
+
+      pyhton clients.py
+
+<h1 align="center"> Хорошего дня! <a href="" target="_blank"></a> 
+<img src="https://github.com/blackcater/blackcater/raw/main/images/Hi.gif" height="32"/></h1>
+<h3 align="center"></h3>
+  
