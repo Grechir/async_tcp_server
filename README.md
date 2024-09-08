@@ -1,4 +1,4 @@
-# TCP Ping-Pong
+<h1 align="center"> TCP Ping-Pong <a href="" target="_blank"></a>
 
 ## Описание
 Проект написан на **python 3.10** с использованием библиотеки **asyncio**. 
